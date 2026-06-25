@@ -202,4 +202,16 @@ This project covers a pattern that shows up in nearly every real backend: a comp
 
 ---
 
-*Code for this project is available on [GitHub](https://github.com/bilalamjad-devops/terraform-aws-ec2-rds) — update the link if your repo name differs.*
+*Code for this project is available on [GitHub](https://github.com/bilalamjad-devops/terraform-aws-ec2-rds)*
+
+If you found this article helpful, consider giving the GitHub repository a ⭐ and following me for more hands-on AWS, Terraform, and DevOps projects.
+
+---
+
+Let's connect and share knowledge! You can find me on:
+
+* **[GitHub](https://github.com/bilalamjad-devops)** — Check out my open-source projects and complete lab source code.
+* **[LinkedIn](https://www.linkedin.com/in/bilalamjad-devops/)** — Let's connect professionally and discuss all things DevOps and Cloud Engineering.
+* **[Medium](https://medium.com/@bilalamjad-devops)** — Follow my profile for more deep-dives, automation guides, and technical walkthroughs.
+
+24-June-2026
