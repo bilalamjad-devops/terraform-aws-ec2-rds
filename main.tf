@@ -97,8 +97,8 @@ resource "aws_instance" "web_app_server" {
 
               # 2. Project cloning aur folder paths setup
               cd /home/ubuntu
-              git clone https://github.com/bilalamjad-devops/ec2-rds.git
-              cd ec2-rds
+              git clone https://github.com/bilalamjad-devops/terraform-aws-ec2-rds.git
+              cd terraform-aws-ec2-rds
 
               # 3. Ownership fix karna taake PEP 668 external error na aaye
               sudo chown -R ubuntu:ubuntu /home/ubuntu/ec2-rds
