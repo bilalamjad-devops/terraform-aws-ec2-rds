@@ -26,7 +26,7 @@ This project uses:
 - **Terraform** — provisions both tiers and wires the connection between them automatically
 - **EC2 user data** — bootstraps the application on first boot: clones the repo, installs dependencies, configures the database connection, and starts the app — without any manual server setup
 
-## Steps We'll Follow
+### Steps We'll Follow
 
 1. **Write the Terraform configuration** — security groups, RDS instance, EC2 instance with a bootstrap script
 2. **Deploy with Terraform** — `terraform apply`
@@ -35,7 +35,7 @@ This project uses:
 5. **Verify the database directly** — SSH into EC2, connect to RDS with the MySQL client, and confirm the data landed
 6. **Clean up** — `terraform destroy`
 
-## Architecture
+### Architecture
 
 ```
 Browser
@@ -57,7 +57,7 @@ RDS MySQL Instance (private, not publicly accessible)
 
 ---
 
-## Step 1: The Terraform Configuration
+### Step 1: The Terraform Configuration
 
 A few changes from a typical copy-pasted lab config, worth calling out:
 
@@ -65,166 +65,8 @@ A few changes from a typical copy-pasted lab config, worth calling out:
 - The bootstrap script's `chown` path now matches the actual clone path (a mismatch here would silently break permissions on first boot).
 - **Before deploying**, verify the AMI ID is valid for *your* region. AMI IDs are region-specific — copying one from a different region's tutorial won't work.
 
-```hcl
-# ==============================================================================
-# 1. PROVIDER & VARIABLES
-# ==============================================================================
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
 
-provider "aws" {
-  region = "ap-south-1" # change to your preferred region
-}
-
-variable "db_password" {
-  description = "Password for the RDS MySQL admin user"
-  type        = string
-  sensitive   = true
-  # Set this via a terraform.tfvars file (gitignored) or TF_VAR_db_password env var —
-  # never hardcode it directly in this file.
-}
-
-# ==============================================================================
-# 2. SECURITY GROUPS (WEB & DATABASE TIER)
-# ==============================================================================
-resource "aws_security_group" "web_sg" {
-  name        = "flask-ec2-security-group"
-  description = "Allows SSH and application traffic on port 5000"
-
-  ingress {
-    description = "SSH access"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # ⚠️ lab-only — restrict to your own IP in anything beyond a lab
-  }
-
-  ingress {
-    description = "Flask application port"
-    from_port   = 5000
-    to_port     = 5000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_security_group" "db_sg" {
-  name        = "mysql-rds-security-group"
-  description = "Restricts database traffic to the EC2 web tier only"
-
-  ingress {
-    description     = "MySQL traffic, EC2 security group only"
-    from_port       = 3306
-    to_port         = 3306
-    protocol        = "tcp"
-    security_groups = [aws_security_group.web_sg.id] # this is the key isolation: no CIDR block, just the web SG
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-# ==============================================================================
-# 3. RDS MYSQL DATABASE TIER
-# ==============================================================================
-resource "aws_db_instance" "mysql_rds" {
-  identifier             = "dev-backend-mysql"
-  allocated_storage      = 20
-  db_name                = "web_db"
-  engine                 = "mysql"
-  engine_version         = "8.0"
-  instance_class         = "db.t3.micro"
-  username               = "admin"
-  password               = var.db_password
-  vpc_security_group_ids = [aws_security_group.db_sg.id]
-  skip_final_snapshot    = true
-  publicly_accessible    = false # never reachable from outside the VPC
-
-  tags = {
-    Name        = "dev-backend-database"
-    Environment = "development"
-    Project     = "two-tier-foundations"
-  }
-}
-
-# ==============================================================================
-# 4. COMPUTE TIER WITH AUTOMATIC BOOTSTRAPPING
-# ==============================================================================
-resource "aws_instance" "web_app_server" {
-  ami                    = "ami-XXXXXXXXXXXXXXXXX" # 👈 verify a current Ubuntu 22.04 AMI for YOUR region
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.web_sg.id]
-
-  user_data = <<-EOF
-              #!/bin/bash
-              # 1. Update system packages and install Python tooling
-              sudo apt-get update -y
-              sudo apt-get install python3-pip python3-dev python3-venv git -y
-
-              # 2. Clone the application repo
-              cd /home/ubuntu
-              git clone https://github.com/bilalamjad-devops/terraform-aws-ec2-rds.git
-              cd terraform-aws-ec2-rds
-
-              # 3. Fix ownership so the ubuntu user can write to this directory
-              sudo chown -R ubuntu:ubuntu /home/ubuntu/terraform-aws-ec2-rds
-
-              # 4. Create and activate an isolated virtual environment
-              python3 -m venv venv
-              source venv/bin/activate
-
-              # 5. Install dependencies inside the venv
-              pip3 install -r requirements.txt
-
-              # 6. Write the database connection details for the app to read
-              echo "DB_HOST=${aws_db_instance.mysql_rds.address}" > .env
-              echo "DB_USER=${aws_db_instance.mysql_rds.username}" >> .env
-              echo "DB_PASSWORD=${var.db_password}" >> .env
-              echo "DB_NAME=web_db" >> .env
-
-              # 7. Start the Flask app in the background
-              nohup python3 app.py > flask.log 2>&1 &
-              EOF
-
-  tags = {
-    Name        = "dev-app-server"
-    Environment = "development"
-    Project     = "two-tier-foundations"
-  }
-}
-
-output "ec2_public_url" {
-  value       = "http://${aws_instance.web_app_server.public_ip}:5000"
-  description = "Public URL to test the application"
-}
-```
-
-Set the database password without ever writing it into `main.tf`:
-
-```bash
-export TF_VAR_db_password="choose-a-real-password-here"
-```
-
----
-
-## Step 2: Deploy It
+### Step 2: Deploy It
 
 ```bash
 terraform init
@@ -238,7 +80,7 @@ Confirm with `yes`. Terraform provisions both security groups, the RDS instance,
 
 ---
 
-## Step 3: Verify the Infrastructure
+### Step 3: Verify the Infrastructure
 
 A few quick checks in the console before testing the app:
 
@@ -256,7 +98,7 @@ A few quick checks in the console before testing the app:
 
 ---
 
-## Step 4: Verify the App in the Browser
+### Step 4: Verify the App in the Browser
 
 Take the `ec2_public_url` value from the Terraform output:
 
@@ -276,7 +118,7 @@ Open it in a browser, fill in the form (e.g. "Bilal Amjad — Smooth Test"), and
 
 ---
 
-## Step 5: Verify the Database Directly
+### Step 5: Verify the Database Directly
 
 This step proves the data actually landed in RDS, not just that the app *said* it succeeded.
 
@@ -329,7 +171,7 @@ Seeing your test submission in the query results is the real proof the two tiers
 
 ---
 
-## Step 6: Clean Up
+### Step 6: Clean Up
 
 ```bash
 terraform destroy --auto-approve
