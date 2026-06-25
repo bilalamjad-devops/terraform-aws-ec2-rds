@@ -1,5 +1,8 @@
 # Building a Two-Tier Web Application on AWS Using EC2, RDS, and Terraform
 
+<img width="1672" height="941" alt="ChatGPT Image Jun 25, 2026, 12_38_04 PM" src="https://github.com/user-attachments/assets/a9dfe7b6-6e15-4d9e-ac15-71ba8a6cc03a" />
+
+
 *Learn how to deploy a Flask application on Amazon EC2, connect it to Amazon RDS MySQL, and automate the entire infrastructure using Terraform.*
 
 ---
