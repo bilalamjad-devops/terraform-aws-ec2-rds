@@ -149,7 +149,7 @@ curl -o global-bundle.pem https://truststore.pki.rds.amazonaws.com/global/global
 mysql -h <YOUR_RDS_ENDPOINT_FROM_DOTENV> -P 3306 -u admin -p --ssl-mode=VERIFY_IDENTITY --ssl-ca=./global-bundle.pem
 ```
 
-Enter the database password you set via `TF_VAR_db_password` when prompted (it won't echo to the screen — that's expected).
+Enter the database password: SecurePassword123
 
 Once connected, run:
 
