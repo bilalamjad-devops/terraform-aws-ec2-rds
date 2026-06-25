@@ -11,7 +11,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "ap-south-1" 
+  region = "ap-south-1"
 }
 
 # ==============================================================================
@@ -54,7 +54,7 @@ resource "aws_security_group" "db_sg" {
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
-    security_groups = [aws_security_group.web_sg.id] 
+    security_groups = [aws_security_group.web_sg.id]
   }
 
   egress {
@@ -74,12 +74,18 @@ resource "aws_db_instance" "mysql_rds" {
   db_name                = "web_db"
   engine                 = "mysql"
   engine_version         = "8.0"
-  instance_class         = "db.t3.micro" 
+  instance_class         = "db.t3.micro"
   username               = "admin"
-  password               = "SecurePassword123" 
+  password               = "SecurePassword123"
   vpc_security_group_ids = [aws_security_group.db_sg.id]
   skip_final_snapshot    = true
   publicly_accessible    = false
+
+  tags = {
+    Name        = "dev-backend-database"
+    Environment = "development"
+    Project     = "two-tier-foundations"
+  }
 }
 
 # ==============================================================================
@@ -122,7 +128,9 @@ resource "aws_instance" "web_app_server" {
               EOF
 
   tags = {
-    Name = "2-Tier-Flask-Environment-Server"
+    Name        = "dev-app-server"
+    Environment = "development"
+    Project     = "two-tier-foundations"
   }
 }
 
