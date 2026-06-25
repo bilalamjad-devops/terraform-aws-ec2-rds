@@ -40,7 +40,15 @@ Ab data check karne ke liye apne EC2 server ke andar enter ho kar ye simple flow
 ssh -i your-key.pem ubuntu@<EC2_PUBLIC_IP>
 
 # 2. Lab folder mein shift hon
-cd terraform-aws-ec2-rds
+
+# Repo folder ke andar shift hon
+cd ~/terraform-aws-ec2-rds
+
+# Sab se pehle pure folder ki ownership root se badal kar ubuntu user ko dein
+sudo chown -R ubuntu:ubuntu /home/ubuntu/terraform-aws-ec2-rds
+
+# System repositories ko update karein
+sudo apt update -y
 
 # 3. Environment ko activate kar ke dynamic env parameters check karein
 source venv/bin/activate
