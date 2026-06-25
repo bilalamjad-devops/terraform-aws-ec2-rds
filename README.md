@@ -116,7 +116,6 @@ Open it in a browser, fill in the form (e.g. "Bilal Amjad — Smooth Test"), and
 
 <img width="1600" height="900" alt="success message after form submission" src="https://github.com/user-attachments/assets/f4e2e406-e447-487c-ae3b-98c609f59123" />
 
-<img width="1600" height="900" alt="confirming the app is reachable and responsive" src="https://github.com/user-attachments/assets/9caecf0d-e82f-43e8-954d-7fab0956a723" />
 
 ---
 
@@ -164,6 +163,8 @@ SELECT * FROM users;
 -- Disconnect
 EXIT;
 ```
+
+<img width="1600" height="900" alt="confirming the app is reachable and responsive" src="https://github.com/user-attachments/assets/9caecf0d-e82f-43e8-954d-7fab0956a723" />
 
 <img width="1600" height="900" alt="connecting to RDS from the EC2 instance via the MySQL client" src="https://github.com/user-attachments/assets/59fa9f49-0a13-4914-a2c4-b94e2972a7d5" />
 
