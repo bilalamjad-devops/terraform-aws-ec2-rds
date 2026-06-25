@@ -64,7 +64,6 @@ RDS MySQL Instance (private, not publicly accessible)
 
 A few changes from a typical copy-pasted lab config, worth calling out:
 
-- The database password is a Terraform variable, not a hardcoded string — so it's never committed to your repo in plain text.
 - The bootstrap script's `chown` path now matches the actual clone path (a mismatch here would silently break permissions on first boot).
 - **Before deploying**, verify the AMI ID is valid for *your* region. AMI IDs are region-specific — copying one from a different region's tutorial won't work.
 
