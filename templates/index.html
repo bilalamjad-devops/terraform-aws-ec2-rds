@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Cloud Architecture Demo</title>
+    <style>
+        :root {
+            --aws-orange: #ff9900;
+            --aws-squid-ink: #232f3e;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            min-height: 100vh;
+            align-items: center;
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: 550px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border-top: 5px solid var(--aws-orange);
+        }
+
+        h2 {
+            color: var(--aws-squid-ink);
+            margin-top: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: -10px;
+            margin-bottom: 25px;
+        }
+
+        /* Metadata Cards Layout */
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .meta-card {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        .meta-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #9ca3af;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .meta-value {
+            font-size: 14px;
+            color: var(--aws-squid-ink);
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            word-break: break-all;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: #e5e7eb;
+            margin: 25px 0;
+        }
+
+        /* Form Controls */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--aws-orange);
+            box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.15);
+        }
+
+        button {
+            background-color: var(--aws-orange);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        button:hover {
+            background-color: #e08800;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Status Alerts */
+        .alert {
+            margin-top: 20px;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .alert-success {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-error {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <h2>☁️ AWS Multi-Tier Cloud Application</h2>
+    <div class="subtitle">Live Infrastructure Verification Dashboard</div>
+
+    <div class="meta-grid">
+        <div class="meta-card">
+            <div class="meta-label">📟 Serving EC2 Instance</div>
+            <div class="meta-value">{{ instance_id }}</div>
+        </div>
+        <div class="meta-card">
+            <div class="meta-label">📍 Availability Zone</div>
+            <div class="meta-value" style="color: #ef4444;">{{ availability_zone }}</div>
+        </div>
+    </div>
+
+    <hr>
+
+    <form action="/submit" method="POST" class="form-group">
+        <input 
+            type="text" 
+            name="user_data" 
+            placeholder="Write log payload to test RDS Database connectivity..." 
+            required
+            autocomplete="off"
+        >
+        <button type="submit">Submit Record to RDS</button>
+    </form>
+
+    {% if message %}
+        {% if "Success" in message %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% else %}
+            <div class="alert alert-error">
+                {{ message }}
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+
+</body>
+</html>
