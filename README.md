@@ -31,47 +31,54 @@ http://<EC2_PUBLIC_IP>:5000
 
 ---
 
-### 📊 Step 5: Inside the Database Verification
+Here is the clean, structured runbook with all comments translated into clear, professional English.
 
-Ab data check karne ke liye apne EC2 server ke andar enter ho kar ye simple flow chalayein:
+---
+
+### 📋 EC2 Database Verification Runbook
 
 ```bash
-# 1. Server mein enter hon
+# 1. Connect to your EC2 instance via SSH
 ssh -i your-key.pem ubuntu@<EC2_PUBLIC_IP>
 
-# 2. Lab folder mein shift hon
-
-# Repo folder ke andar shift hon
+# 2. Change directory to the repository folder
 cd ~/terraform-aws-ec2-rds
 
-# Sab se pehle pure folder ki ownership root se badal kar ubuntu user ko dein
+# 3. Fix directory ownership from root to the ubuntu user (prevents write permission errors)
 sudo chown -R ubuntu:ubuntu /home/ubuntu/terraform-aws-ec2-rds
 
-# System repositories ko update karein
-sudo apt update -y
-
-# 3. Environment ko activate kar ke dynamic env parameters check karein
+# 4. Activate the isolated Python virtual environment
 source venv/bin/activate
+
+# 5. View environment variables to verify the active RDS Endpoint mapping
 cat .env
 
-# 4. Latest Ubuntu images ke mutabik client install karein (Sirf ek baar)
+# 6. Install the native MySQL client core tool for the latest Ubuntu images (Required only once)
 sudo apt install mysql-client-core -y
 
-# 5. AWS Certificate download karein secure layer connection ke liye
+# 7. Download the official AWS global root certificate bundle for the secure SSL layer connection
 curl -o global-bundle.pem https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
 
-# 6. Database connect karein (Endpoint custom .env se fetch karein)
+# 8. Connect to the remote RDS MySQL database securely using the endpoint from your .env file
 mysql -h <YOUR_RDS_ENDPOINT_FROM_DOTENV> -P 3306 -u admin -p --ssl-mode=VERIFY_IDENTITY --ssl-ca=./global-bundle.pem
 
 ```
 
-*Password enter karein:* `SecurePassword123`
+* **When prompted for the password, type:** `SecurePassword123` *(Note: The characters will not display on the screen as you type, just press Enter).*
 
-**MySQL terminal ke andar ye queries run karein:**
+---
+
+### 🗄️ SQL Queries to Execute Inside the MySQL Terminal:
 
 ```sql
+-- 1. Select the application target database environment
 USE web_db;
+
+-- 2. Fetch and view all live records submitted from the web interface
 SELECT * FROM users;
+
+-- 3. Safely disconnect and close the MySQL session
+EXIT;
 
 ```
 
