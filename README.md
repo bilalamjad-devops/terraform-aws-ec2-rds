@@ -1,4 +1,4 @@
-# Building a Two-Tier Web App on AWS: EC2, RDS, and Terraform
+# Building a Two-Tier Web Application on AWS Using EC2, RDS, and Terraform
 
 *Provision a Flask app server and a managed MySQL database, wired together automatically, in one Terraform apply.*
 
