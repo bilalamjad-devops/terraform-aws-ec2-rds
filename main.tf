@@ -126,6 +126,6 @@ resource "aws_instance" "web_app_server" {
 }
 
 output "ec2_public_url" {
-  value       = "http://$${aws_instance.web_app_server.public_ip}:5000"
+  value       = "http://${aws_instance.web_app_server.public_ip}:5000"
   description = "The public URL to test your application"
 }
