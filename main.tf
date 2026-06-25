@@ -69,6 +69,7 @@ resource "aws_security_group" "db_sg" {
 # 3. AWS RDS MYSQL DATABASE TIER
 # ==============================================================================
 resource "aws_db_instance" "mysql_rds" {
+  identifier             = "dev-backend-mysql" # AWS Console identification URL base
   allocated_storage      = 20
   db_name                = "web_db"
   engine                 = "mysql"
