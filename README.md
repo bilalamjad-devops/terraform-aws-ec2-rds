@@ -51,6 +51,11 @@ EC2 Instance (Flask app, port 5000)
 RDS MySQL Instance (private, not publicly accessible)
 ```
 
+or
+
+```architecture
+User → EC2 → RDS
+```
 ## Prerequisites
 
 - An AWS account with programmatic access
